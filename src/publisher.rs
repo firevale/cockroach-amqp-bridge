@@ -7,7 +7,7 @@ use log::info;
 use sqlx::{pool::Pool, Postgres};
 
 pub struct Publisher {
-  pub amqp_uri: String,
+  pub amqp_url: String,
   pub exchange: String,
   pub channel: Option<Channel>,
 }
@@ -15,7 +15,7 @@ pub struct Publisher {
 impl Publisher {
   async fn create_channel(&mut self) -> anyhow::Result<()> {
     let conn = Connection::connect(
-      self.amqp_uri.as_str(),
+      self.amqp_url.as_str(),
       ConnectionProperties::default().with_default_executor(8),
     )
     .await?;
@@ -72,11 +72,11 @@ impl Publisher {
 pub async fn start(
   pool: Pool<Postgres>,
   mut receiver: mpsc::UnboundedReceiver<BridgeEvent>,
-  amqp_uri: &str,
+  amqp_url: &str,
   amqp_exchange: &str,
 ) {
   let mut publisher = Publisher {
-    amqp_uri: amqp_uri.to_owned(),
+    amqp_url: amqp_url.to_owned(),
     exchange: amqp_exchange.to_owned(),
     channel: None,
   };

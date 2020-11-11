@@ -22,7 +22,7 @@ pub struct ChangefeedOptions {
 impl ChangefeedOptions {
   pub fn query_string(&self) -> String {
     if self.table_name.is_empty() {
-      panic!("can not capter change feed without table name");
+      panic!("can not capture change feed without table name");
     }
 
     let mut query: String = format!(

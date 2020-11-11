@@ -1,13 +1,13 @@
 # Cockroach to AMQP bridge
 
-#### Sync change data to RabbitMQ from Cockroach DB
+#### Sync change data to RabbitMQ from CockroachDB
 
 ## Introduction
 
 For traditional database, we have [Canal](https://github.com/alibaba/canal), [Maxwell](https://github.com/zendesk/maxwell) for mysql, or [pg-amqp-bridge](https://github.com/subzerocloud/pg-amqp-bridge) for Postgresql, to synchronize change data
 from database to rabbitmq.
 
-This tool achieves some features via [experimental core changefeed](https://www.cockroachlabs.com/docs/v20.2/stream-data-out-of-cockroachdb-using-changefeeds.html#create-a-core-changefeed) for CockroachDB.
+This tool achieves same feature via [experimental core changefeed](https://www.cockroachlabs.com/docs/v20.2/stream-data-out-of-cockroachdb-using-changefeeds.html#create-a-core-changefeed) for CockroachDB.
 
 ## Configuration
 
@@ -48,8 +48,6 @@ docker run --rm -it --net=host \
 -e RUST_LOG=info \
 firevale/cockroach-amqp-bridge
 ```
-
-You can enable logging of the forwarded messages with the `RUST_LOG=info` environment variable.
 
 ## Contributing
 

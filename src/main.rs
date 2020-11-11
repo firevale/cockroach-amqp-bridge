@@ -66,11 +66,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   let (sender, receiver) = mpsc::unbounded();
 
   let cloned_pool = pool.clone();
-  let amqp_uri = config.amqp_url.clone();
+  let amqp_url = config.amqp_url.clone();
   let amqp_exchange = config.amqp_exchange.clone();
 
   let publisher = async_std::task::spawn(async move {
-    publisher::start(cloned_pool, receiver, &amqp_uri, &amqp_exchange).await;
+    publisher::start(cloned_pool, receiver, &amqp_url, &amqp_exchange).await;
   });
 
   let handles: Vec<JoinHandle<()>> = tables
