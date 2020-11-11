@@ -1,0 +1,16 @@
+{
+  "files.exclude": {
+    ".data": true,
+    "target": true,
+    "**/.git": true,
+    "**/.DS_Store": true,
+  },
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.formatOnType": false,
+  "editor.formatOnSave": true,
+  "git.ignoredRepositories": [
+    "~/.cargo"
+  ],
+  // "editor.unfoldOnClickAfterEndOfLine": true
+}

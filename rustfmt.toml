@@ -1,0 +1,5 @@
+max_width = 89
+reorder_imports = true
+#indent_style = "Visual"
+tab_spaces = 2
+use_field_init_shorthand = true
