@@ -2,6 +2,8 @@
 
 #### Sync change data to RabbitMQ from CockroachDB
 
+![cockroach-amqp-bridge](/media/cockroach-amqp-bridge.gif?raw=true "cockroach-amqp-bridge")
+
 ## Introduction
 
 For traditional database, we have [Canal](https://github.com/alibaba/canal), [Maxwell](https://github.com/zendesk/maxwell) for mysql, or [pg-amqp-bridge](https://github.com/subzerocloud/pg-amqp-bridge) for Postgresql, to synchronize change data
