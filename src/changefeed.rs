@@ -50,8 +50,8 @@ impl Changefeed {
               key: Some(key),
               value: Some(value),
             } => {
-              let key: Vec<i64> =
-                serde_json::from_slice(key.as_slice()).expect("invalid key encoding");
+              let key = String::from_utf8(key).expect("invalid key encoding");
+
               let value: serde_json::Value = serde_json::from_slice(value.as_slice())
                 .expect("invalid value encoding");
 

@@ -1,5 +1,6 @@
 use async_ctrlc::CtrlC;
 use async_std::task::JoinHandle;
+use dotenv::dotenv;
 use futures_channel::mpsc;
 use log::info;
 use serde::Deserialize;
@@ -45,9 +46,13 @@ pub enum BridgeEvent {
 
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+  dotenv().ok();
+
   env_logger::init();
 
   let config: Config = envy::from_env()?;
+
+  info!("config: {:?}", config);
 
   let tables: Vec<&str> = config.tables.split(',').collect();
 
@@ -56,7 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     .min_connections(tables.len() as u32)
     .max_lifetime(None)
     .idle_timeout(None)
-    .connect_timeout(Duration::from_secs(10))
+    .connect_timeout(Duration::from_secs(5))
     .test_before_acquire(false)
     .connect(config.database_url.as_str())
     .await?;

@@ -26,6 +26,7 @@ futures-channel = { version = "0.3" }
 smol_str = { version = "0.1", features = ["serde"] }
 envy = "0.4"
 async-ctrlc = "1.2"
+dotenv = "0.15"
 
 [target.'cfg(not(target_env = "msvc"))'.dependencies]
 jemallocator = "0.3"

@@ -400,6 +400,7 @@ dependencies = [
  "anyhow",
  "async-ctrlc",
  "async-std",
+ "dotenv",
  "either",
  "env_logger",
  "envy",
