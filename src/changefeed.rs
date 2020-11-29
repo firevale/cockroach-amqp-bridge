@@ -15,6 +15,7 @@ pub struct Changefeed {
   pub feed_options: ChangefeedOptions,
   pub sender: mpsc::UnboundedSender<BridgeEvent>,
   pub cursor_saved: bool,
+  pub cursor: String,
 }
 
 #[derive(Debug, sqlx::FromRow)]
@@ -55,6 +56,10 @@ impl Changefeed {
               let value: serde_json::Value = serde_json::from_slice(value.as_slice())
                 .expect("invalid value encoding");
 
+              if let Some(serde_json::Value::String(cursor)) = value.get("updated") {
+                self.cursor = cursor.clone();
+              }
+
               let payload = serde_json::to_vec(&json!({
                 "key": key,
                 "value": value
@@ -82,7 +87,7 @@ impl Changefeed {
               if !self.cursor_saved {
                 let payload = CursorPayload {
                   table_name: self.feed_options.table_name.clone(),
-                  cursor: res.resolved.clone(),
+                  cursor: self.cursor.clone().into(),
                 };
 
                 let event = BridgeEvent::Cursor(payload);
@@ -142,7 +147,8 @@ pub async fn start(
     pool,
     sender,
     feed_options,
-    cursor_saved: false,
+    cursor_saved: true,
+    cursor: "".to_string(),
   };
 
   feed.start().await.expect("feed stopped");

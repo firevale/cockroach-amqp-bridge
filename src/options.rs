@@ -26,7 +26,7 @@ impl ChangefeedOptions {
     }
 
     let mut query: String = format!(
-      "EXPERIMENTAL CHANGEFEED FOR {} with resolved = '10s'",
+      "EXPERIMENTAL CHANGEFEED FOR {} with updated, resolved = '10s'",
       self.table_name
     );
 
