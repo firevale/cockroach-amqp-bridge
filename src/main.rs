@@ -1,4 +1,5 @@
 use async_ctrlc::CtrlC;
+use async_std::prelude::*;
 use async_std::task::JoinHandle;
 use dotenv::dotenv;
 use futures_channel::mpsc;
@@ -79,8 +80,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   });
 
   let handles: Vec<JoinHandle<()>> = tables
-    .iter()
-    .cloned()
+    .into_iter()
     .map(|table| {
       let pool = pool.clone();
       let sender = sender.clone();
@@ -91,14 +91,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     })
     .collect();
 
-  CtrlC::new().expect("cannot create Ctrl+C handler?").await;
+  let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");
+
+  ctrlc.race(publisher).await;
 
   info!("stop fetching changefeeds...");
   drop(handles);
-
-  info!("notify publisher to stop");
-  sender.unbounded_send(BridgeEvent::Stop)?;
-  publisher.await;
 
   info!("done");
 

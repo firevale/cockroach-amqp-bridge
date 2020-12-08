@@ -31,12 +31,6 @@ struct Resolved {
 }
 
 impl Changefeed {
-  async fn start(&mut self) -> anyhow::Result<()> {
-    loop {
-      self.infinite_fetch().await?;
-    }
-  }
-
   async fn infinite_fetch(&mut self) -> anyhow::Result<()> {
     let query = self.feed_options.query_string();
 
@@ -122,6 +116,13 @@ impl Changefeed {
       }
     }
 
+    error!(
+      "stop listening cdc on table: {}",
+      self.feed_options.table_name
+    );
+
+    self.sender.unbounded_send(BridgeEvent::Stop)?;
+
     Ok(())
   }
 }
@@ -151,5 +152,5 @@ pub async fn start(
     cursor: "".to_string(),
   };
 
-  feed.start().await.expect("feed stopped");
+  feed.infinite_fetch().await.expect("feed stopped");
 }
