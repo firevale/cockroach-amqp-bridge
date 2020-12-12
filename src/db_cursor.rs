@@ -5,7 +5,7 @@ use sqlx::{pool::Pool, Postgres};
 pub async fn create_cursor_table(pool: &Pool<Postgres>) -> anyhow::Result<()> {
   let query = r#" 
     CREATE TABLE IF NOT EXISTS _amqp_bridge_cursors (
-      "table_name" VARCHAR(100) PRIMARY KEY,
+      "table_name" VARCHAR PRIMARY KEY,
       "cursor" VARCHAR(30)
     );
   "#;

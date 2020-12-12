@@ -1,6 +1,6 @@
 use async_ctrlc::CtrlC;
 use async_std::prelude::*;
-use async_std::task::JoinHandle;
+// use async_std::task::JoinHandle;
 use dotenv::dotenv;
 use futures_channel::mpsc;
 use log::info;
@@ -55,11 +55,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
   info!("config: {:?}", config);
 
-  let tables: Vec<&str> = config.tables.split(',').collect();
-
   let pool = PoolOptions::<Postgres>::new()
-    .max_connections(tables.len() as u32 * 2_u32)
-    .min_connections(tables.len() as u32)
+    .max_connections(4)
+    .min_connections(2)
     .max_lifetime(None)
     .idle_timeout(None)
     .connect_timeout(Duration::from_secs(5))
@@ -79,24 +77,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     publisher::start(cloned_pool, receiver, &amqp_url, &amqp_exchange).await;
   });
 
-  let handles: Vec<JoinHandle<()>> = tables
-    .into_iter()
-    .map(|table| {
-      let pool = pool.clone();
-      let sender = sender.clone();
-      let table = table.into();
-      async_std::task::spawn(async move {
-        changefeed::start(pool, table, sender).await;
-      })
-    })
-    .collect();
+  let pool = pool.clone();
+  let sender = sender.clone();
+  let table = config.tables.into();
+
+  let cdc = async_std::task::spawn(async move {
+    changefeed::start(pool, table, sender).await;
+  });
 
   let ctrlc = CtrlC::new().expect("cannot create Ctrl+C handler?");
 
-  ctrlc.race(publisher).await;
+  ctrlc.race(async move { cdc.race(publisher).await }).await;
 
   info!("stop fetching changefeeds...");
-  drop(handles);
 
   info!("done");
 

@@ -34,7 +34,9 @@ impl Changefeed {
   async fn infinite_fetch(&mut self) -> anyhow::Result<()> {
     let query = self.feed_options.query_string();
 
-    let mut s = sqlx::query(&query).fetch_many(&self.pool);
+    let mut conn = self.pool.acquire().await?;
+
+    let mut s = sqlx::query(&query).fetch_many(&mut conn);
 
     while let Some(result) = s.next().await {
       match result {
@@ -112,7 +114,11 @@ impl Changefeed {
           );
           break;
         }
-        _ => break,
+
+        Err(e) => {
+          error!("something went wrong: {:?}", e);
+          break;
+        }
       }
     }
 
